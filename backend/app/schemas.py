@@ -24,6 +24,7 @@ class BudgetCategoryCreate(BaseModel):
     name: str
     type: str
     base_amount: int | None = None
+    color: str | None = None
 
 
 class BudgetCategoryUpdateName(BaseModel):

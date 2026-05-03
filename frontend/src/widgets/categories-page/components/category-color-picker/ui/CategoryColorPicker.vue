@@ -1,16 +1,18 @@
 <template>
   <div class="relative">
     <button
+      ref="buttonRef"
       class="w-4 h-4 rounded-full border-2 border-white ring-1 ring-gray-200 flex-shrink-0 transition-transform hover:scale-110"
       :style="color ? { backgroundColor: color } : {}"
       :class="!color ? 'bg-gray-200' : ''"
       title="Выбрать цвет"
-      @click.stop="isOpen = !isOpen"
+      @click.stop="toggleOpen"
     />
 
     <div
       v-if="isOpen"
-      class="absolute left-0 top-6 z-20 bg-white rounded-lg shadow-lg border border-gray-100 p-2 w-40"
+      class="absolute left-0 z-20 bg-white rounded-lg shadow-lg border border-gray-100 p-2 w-40"
+      :class="dropUp ? 'bottom-6' : 'top-6'"
     >
       <div class="grid grid-cols-5 gap-1.5">
         <button
@@ -60,6 +62,16 @@ const props = defineProps<{ id: number; color: string | null }>()
 const emit = defineEmits<{ updated: [category: BudgetCategory] }>()
 
 const isOpen = ref(false)
+const dropUp = ref(false)
+const buttonRef = ref<HTMLButtonElement | null>(null)
+
+function toggleOpen() {
+  if (!isOpen.value && buttonRef.value) {
+    const rect = buttonRef.value.getBoundingClientRect()
+    dropUp.value = rect.bottom + 130 > window.innerHeight
+  }
+  isOpen.value = !isOpen.value
+}
 
 async function select(value: string | null) {
   isOpen.value = false

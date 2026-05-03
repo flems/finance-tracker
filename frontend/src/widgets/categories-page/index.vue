@@ -10,7 +10,7 @@
       {{ error }}
     </div>
 
-    <div v-else class="overflow-x-auto overflow-y-visible pr-8">
+    <div v-else class="pr-8">
       <BudgetCategoryTable :categories="categories">
         <template #color="{ category }">
           <CategoryColorPicker

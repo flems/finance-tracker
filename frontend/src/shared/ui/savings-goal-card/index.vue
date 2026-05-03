@@ -26,31 +26,33 @@
         { 'rounded-tl-none': target > 0 },
       ]"
     >
-      <div class="flex items-start justify-between">
-        <div>
-          <h2 class="text-xl font-semibold text-gray-900">{{ title }}</h2>
+      <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+        <div class="min-w-0">
+          <h2 class="text-base font-semibold text-gray-900 leading-snug">{{ title }}</h2>
           <p class="text-sm text-gray-600 whitespace-pre-line">{{ comment }}</p>
         </div>
-        <div class="text-right text-sm text-gray-700">
+        <div class="text-left sm:text-right text-sm text-gray-700 shrink-0">
           <slot
             name="header-values"
             :current="current"
             :next-target="nextTarget"
             :format-amount="formatAmount"
           >
-            <div class="text-xl font-bold text-gray-900">
+            <div
+              class="text-base font-bold text-gray-900 flex flex-wrap gap-x-1 items-baseline sm:justify-end"
+            >
               <span class="whitespace-nowrap text-blue-600"
                 >{{ formatAmount(current) }} {{ currency }}</span
               >
               <template v-if="target > 0">
-                <span class="text-gray-400 mx-2">/</span>
+                <span class="text-gray-400">/</span>
                 <span class="whitespace-nowrap text-gray-600"
                   >{{ formatAmount(nextTarget) }} {{ currency }}</span
                 >
               </template>
             </div>
           </slot>
-          <div v-if="target > 0" class="text-xs font-medium text-blue-600 mt-1">
+          <div v-if="target > 0" class="text-xs font-medium text-blue-600 mt-0.5">
             Этап выполнен на {{ progressToNextTarget }}%
           </div>
         </div>
