@@ -1,0 +1,95 @@
+---
+description: Создание новой страницы во фронтенде. Применять когда пользователь просит создать новую страницу.
+alwaysApply: false
+---
+
+# Создание новой страницы во фронтенде
+
+## Правила именования
+
+Дано имя страницы в kebab-case (например `analytics`):
+- **PascalCase** — используется только для `.vue`-файлов и переменных импорта (например `Analytics`)
+- **kebab-case** — используется для папок (например `analytics`, `analytics-page`)
+- **Метка меню** — спроси у пользователя если неочевидно
+
+> Виджет страницы: папка `widgets/<page-kebab-name>-page/` (kebab-case + суффикс `-page`), компонент внутри — `index.vue`.
+
+## Структура файлов
+
+Создать:
+```
+frontend/src/
+  pages/
+    <page-kebab-name>/
+      <PascalCase>Page.vue
+  widgets/
+    <page-kebab-name>-page/
+      index.vue
+```
+
+### `widgets/<page-kebab-name>-page/index.vue`
+```vue
+<template>
+  <div class="bg-white rounded-lg shadow p-6 space-y-4">
+    <h2 class="text-xl font-semibold text-gray-900"><Метка страницы></h2>
+    <p class="text-gray-600">
+      Здесь будет отображаться «<Метка страницы>».
+    </p>
+  </div>
+</template>
+
+<script setup lang="ts">
+</script>
+```
+
+### `pages/<page-kebab-name>/<PascalCase>Page.vue`
+```vue
+<template>
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-3xl font-bold mb-2"><Метка страницы></h1>
+      <p class="text-gray-600 text-sm"><Краткое описание></p>
+    </div>
+
+    <<PascalCase>PageWidget />
+  </div>
+</template>
+
+<script setup lang="ts">
+import <PascalCase>PageWidget from '@/widgets/<page-kebab-name>-page/index.vue'
+</script>
+```
+
+## `frontend/src/router/index.ts`
+
+Добавить импорт:
+```ts
+import <PascalCase>Page from '@/pages/<page-kebab-name>/<PascalCase>Page.vue'
+```
+
+Добавить дочерний маршрут в `children` корневого layout:
+```ts
+{
+  path: '<page-kebab-name>',
+  name: '<page-kebab-name>',
+  component: <PascalCase>Page,
+},
+```
+
+## `frontend/src/widgets/app-header/AppHeader.vue`
+
+Добавить ссылку в массив `links`:
+```ts
+{ path: '/<page-kebab-name>', label: '<Метка меню>' },
+```
+
+## FSD
+
+При создании страницы соблюдать слои из `fsd-structure.mdc`:
+- Типы сущности и fetch-функции → `entities/<entity>/api/`
+- UI-компоненты отображения → `entities/<entity>/ui/`
+- Виджет страницы → только оркестрация (запрос + состояния), не рисует таблицы сам
+
+## Итог
+
+Страница доступна по `/<page-kebab-name>`. Виджет `widgets/<page-kebab-name>-page/index.vue` всегда создаётся вместе со страницей и подключается в `<PascalCase>Page.vue`.

@@ -1,0 +1,203 @@
+---
+description: Контракты API бэкенда — эндпоинты и соглашения об ошибках. Применять при работе с backend/ или frontend/src/shared/api/.
+globs: backend/**/*.py,frontend/src/shared/api/**/*.ts,frontend/src/**/api/*.ts
+alwaysApply: false
+---
+
+# API Contracts
+
+> **Правило:** при любом изменении или добавлении эндпоинта на бэке, а также при изменении формата ошибок — обновить этот файл.
+
+> **Тесты:** тесты живут в `backend/tests/`. Запуск: `docker compose exec backend python -m pytest tests/ -v`
+> - При добавлении нового эндпоинта — обязательно написать тесты к нему
+> - При изменении существующего эндпоинта — обновить тесты и запустить их перед завершением работы
+> - Тесты всегда должны быть зелёными
+
+## Соглашения
+
+### Успешный ответ
+Возвращается тело нужного типа, HTTP-статус `200` (или `201` для создания).
+
+### Ошибка
+Все ошибки возвращаются через `AppError` (`app/errors.py`) в формате:
+
+```json
+{
+  "status": "error",
+  "code": "DUPLICATE_TYPE",
+  "message": "Категория с таким типом уже существует"
+}
+```
+
+- `code` — машиночитаемый идентификатор в `UPPER_SNAKE_CASE`
+- `message` — текст для пользователя на русском
+- На фронте бросается `HttpError(code, message)` — `e.message` идёт в toast, `e.code` для точечной обработки
+
+### Коды ошибок
+
+| code | HTTP | описание |
+|---|---|---|
+| `DUPLICATE_NAME` | 409 | уже есть запись с таким `name` |
+| `DUPLICATE_TYPE` | 409 | уже есть запись с таким `type` |
+| `NOT_FOUND` | 404 | запись не найдена по id |
+| `HTTP_422` | 422 | ошибка валидации Pydantic |
+| `HTTP_500` | 500 | fallback (непредвиденная ошибка) |
+
+---
+
+## Эндпоинты
+
+### Budget `/budget`
+
+| метод | путь | описание |
+|---|---|---|
+| `GET` | `/budget/categories` | список всех категорий, сортировка по `name` |
+| `POST` | `/budget/categories` | создать категорию |
+| `PATCH` | `/budget/categories/{id}/name` | переименовать категорию |
+| `PATCH` | `/budget/categories/{id}/base_amount` | изменить базовую сумму |
+| `PATCH` | `/budget/categories/{id}/color` | изменить цвет (hex `#rrggbb` или `null`) |
+| `DELETE` | `/budget/categories/{id}` | удалить категорию, `204 No Content` |
+
+**BudgetCategory**
+```
+id: int
+name: str           — уникальное, отображаемое название
+type: str           — уникальное, системный slug (например 'rent', 'food'); обязателен
+base_amount: int | null
+color: str | null   — hex-цвет (#rrggbb), например #ef4444
+```
+
+> ⚠️ **DELETE /budget/categories/{id}** упадёт с 500 (FK violation), если на категорию ссылается хотя бы один `BudgetItem` или `SavingGoal`. Проверок на стороне API нет — удалять категорию безопасно только если она не используется.
+
+**POST /budget/categories — тело запроса**
+```json
+{ "name": "Аренда", "type": "rent", "base_amount": 50000 }
+```
+
+**PATCH /budget/categories/{id}/name**
+```json
+{ "name": "Новое название" }
+```
+
+**PATCH /budget/categories/{id}/base_amount**
+```json
+{ "base_amount": 60000 }
+```
+
+**Распределение / выплаты / строки**
+
+| метод | путь | описание |
+|---|---|---|
+| `GET` | `/budget/distribution` | опционально `?year=`; без года — все выплаты по календарным месяцам; с `year=` — только этот год |
+| `POST` | `/budget/incomes` | создать выплату (`payout_date`, `amount`), опционально `category_ids: number[]`, `201` |
+| `DELETE` | `/budget/incomes/{id}` | удалить выплату и все строки (`CASCADE`), `204` |
+| `POST` | `/budget/items` | строка распределения: `income_id`, `category_id`, опционально `amount`, `comment`, `is_paid` |
+| `PATCH` | `/budget/items/{id}` | частично: `category_id`, `amount`, `comment`, `is_paid`, `sort_order` |
+| `DELETE` | `/budget/items/{id}` | `204` |
+
+`POST /budget/incomes` с `category_ids`: для каждого id создаётся строка с суммой `base_amount` категории; если категории нет — `404 NOT_FOUND`, если нет `base_amount` — `422 HTTP_422`.
+
+**BudgetDistributionOut**
+
+```json
+{
+  "year": 2026,
+  "months": [
+    {
+      "year": 2026,
+      "month": 5,
+      "incomes": [
+        {
+          "id": 1,
+          "payout_date": "2026-05-15",
+          "amount": 150000,
+          "items": [
+            {
+              "id": 10,
+              "income_id": 1,
+              "category_id": 2,
+              "category_name": "Аренда",
+              "amount": 50000,
+              "comment": null,
+              "is_paid": false,
+              "sort_order": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+Месяцы упорядочены от позднего к раннему. Выплаты внутри месяца — по дате и `id`.
+
+**POST /budget/incomes — тело**
+```json
+{ "payout_date": "2026-05-15", "amount": 150000, "category_ids": [2, 5] }
+```
+
+При `POST /budget/items` без `amount`: если у категории нет `base_amount` → `422 HTTP_422`.
+
+> `BudgetItem.sort_order` — null означает «добавить в конец» (сервер присваивает `max + 1`). При удалении `BudgetIncome` все его `BudgetItem` удаляются каскадно (DB-level CASCADE).
+
+**Если PostgreSQL создан со старой схемой:** `lifespan` вызывает `create_all()`, но не добавляет новые колонки в существующие таблицы. При отсутствии `budget_items.income_id` backend выбросит `RuntimeError` с инструкцией. Либо разово задать `RESET_BUDGET_SCHEMA=1` в environment backend — пересоздаст пустые `budget_items` и `budget_incomes`, затем убрать переменную.
+
+---
+
+### Savings `/savings`
+
+| метод | путь | описание |
+|---|---|---|
+| `GET` | `/savings/goals` | список всех целей накопления с историей и расчётами |
+| `POST` | `/savings/goals` | создать цель |
+| `DELETE` | `/savings/goals/{id}` | удалить цель и все записи, `204` |
+| `POST` | `/savings/goals/{id}/entries` | добавить запись пополнения, `201` |
+| `DELETE` | `/savings/entries/{id}` | удалить запись пополнения, `204` |
+
+> ⚠️ **Ошибки `/savings`** возвращают FastAPI-формат `{"detail": "..."}`, а не стандартный `AppError`. Фронт обрабатывает их gracefully (fallback на `HTTP_4xx`), но `e.code` будет `HTTP_404`, а не `NOT_FOUND`. При добавлении эндпоинтов в savings.py использовать `AppError` из `app/errors.py`, как в budget.py.
+
+**SavingGoal (ответ)**
+```
+id, title, comment, target_amount, currency, initial_amount
+category_id, category_name  — привязка к BudgetCategory (опционально, nullable)
+milestones: int[]            — промежуточные целевые суммы в той же валюте
+current: int                 — текущая накопленная сумма (не превышает target_amount в percent)
+percent: int                 — процент выполнения, максимум 100
+history: SavingGoalHistoryEntry[]
+```
+
+**Как строится `history` и `current`:**
+- История — слияние двух источников:
+  - `BudgetItem` строки, у которых `category_id` совпадает с `goal.category_id` — автоматически, `deletable: false`, `id: "item-{id}"`
+  - Ручные `SavingEntry` записи — `deletable: true`, `id: "entry-{id}"`
+- `is_planned: true` если дата записи > сегодня; плановые записи **не учитываются** в `current`
+- `current = initial_amount + сумма всех НЕплановых записей истории`
+- Если у цели нет `category_id` — в историю попадают только ручные записи
+- `initial_amount` — начальный баланс на момент создания цели, всегда включается в `current`
+
+**SavingGoalHistoryEntry**
+```
+id: str          — "item-{N}" для бюджетных строк, "entry-{N}" для ручных записей
+date, amount, comment
+is_planned: bool — дата > сегодня; не учитывается в current
+deletable: bool  — false для бюджетных строк, true для ручных записей
+```
+
+**POST /savings/goals — тело**
+```json
+{ "title": "Машина", "target_amount": 1000000, "currency": "₽", "initial_amount": 0, "milestones": [300000, 600000] }
+```
+
+**POST /savings/goals/{id}/entries — тело**
+```json
+{ "amount": 50000, "date": "2026-05-01", "comment": "зарплата" }
+```
+
+---
+
+## Служебные
+
+| метод | путь | описание |
+|---|---|---|
+| `GET` | `/health` | проверка доступности: `{"status": "ok"}` |

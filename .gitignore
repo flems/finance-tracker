@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+
+# Frontend workspace
+frontend/node_modules
+frontend/dist
+frontend/dist-ssr
+
+# Backend workspace
+backend/__pycache__
+backend/.venv
+backend/.env
+*.local
+
+# Claude Code / local agent config
+.claude
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+

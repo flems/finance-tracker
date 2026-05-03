@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: finance-tracker-db
+    environment:
+      POSTGRES_DB: sport_tracker
+      POSTGRES_USER: sport_user
+      POSTGRES_PASSWORD: sport_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: finance-tracker-backend
+    volumes:
+      - ./backend:/app
+    environment:
+      DATABASE_URL: postgresql://sport_user:sport_password@db:5432/sport_tracker
+      # Если после смены моделей упали budget_* таблицы: выставить "1", перезапустить backend, вернуть "0"
+      RESET_BUDGET_SCHEMA: "${RESET_BUDGET_SCHEMA:-}"
+      OAUTH_CONSUMER_KEY: "4964a5ca24254d37863717de299184ee"
+      OAUTH_CONSUMER_SECRET: "a527ad334ba24beca30852b7a35e7230"
+      ACCESS_TOKEN: "6f103a9d833644d383b7c86cb8c3f08f"
+      ACCESS_TOKEN_SECRET: "942777431f944f0a956d9fd004786953"
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+volumes:
+  db_data:
+

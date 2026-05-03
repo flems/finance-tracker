@@ -1,0 +1,106 @@
+---
+description: FSD-структура фронтенда. Применять при любой работе с frontend/src/ — создание новых файлов, добавление функционала, изменение существующего кода, рефакторинг страниц и виджетов.
+globs: frontend/src/**/*.vue,frontend/src/**/*.ts
+alwaysApply: false
+---
+
+# FSD-структура фронтенда
+
+> **Это правило применяется при любой работе с кодом** — не только при создании новых файлов, но и при добавлении функционала в существующие страницы, виджеты и компоненты. Перед тем как писать код, убедись что новый файл или изменение соответствует структуре ниже.
+
+Проект содержит один контекст (финансы). Слои FSD живут напрямую в `frontend/src/`, без обёртки `domains/`. Слои ниже перечислены от самого низкого к высокому — каждый слой может импортировать только из слоёв **ниже себя**.
+
+## Структура `frontend/src/`
+
+```
+frontend/src/
+  shared/       ← переиспользуемая инфраструктура
+  entities/     ← бизнес-сущности
+  widgets/      ← виджеты страниц + app-header
+  pages/        ← страницы (только компоновка)
+  router/
+  App.vue
+  main.ts
+```
+
+## Слои (от низкого к высокому)
+
+### `shared/`
+Переиспользуемая инфраструктура — HTTP-клиент, UI-примитивы. Не содержит бизнес-логики.
+
+```
+shared/
+  api/http.ts
+  ui/check-button/
+  ui/confirm-modal/
+  ui/savings-goal-card/
+  ui/tooltip/
+```
+
+### `entities/<entity-name>/`
+Бизнес-сущность. Содержит:
+- `api/` — TypeScript-интерфейс сущности + fetch-функции (только GET)
+- `ui/` — «немой» компонент: принимает данные через `props` и named scoped slots, не вызывает API
+- `lib/` — вспомогательные функции, утилиты (форматирование, синхронизация данных)
+
+```
+entities/budget-distribution/
+  api/budgetDistributionApi.ts        ← интерфейсы + fetchBudgetDistribution()
+  ui/BudgetDistributionIncomeCard.vue ← props + slots, без API-вызовов
+  lib/formatters.ts                   ← чистые функции
+  lib/syncDistributionTree.ts         ← утилиты мутации дерева данных
+```
+
+### `features/<feature-name>/`
+Существует только для API мутаций (POST/PATCH/DELETE), которые используются **в нескольких виджетах**. Если API используется только в одном виджете — оно живёт внутри виджета как sub-component (см. ниже).
+
+### `widgets/<name>-page/`
+Виджет, покрывающий всю страницу. **Всегда** содержит `-page` в названии папки.
+Отвечает за: запрос данных, состояния `isLoading`/`error`, компоновку `entities` и sub-components.
+
+```
+widgets/budget-page/
+  index.vue                    ← fetch, передаёт данные в entities-компоненты через слоты
+  components/
+    editable-category-name/
+      ui/EditableCategoryName.vue   ← UI мутации (форма, кнопка)
+      api/editBudgetCategoryName.ts ← POST/PATCH/DELETE рядом с UI
+    delete-category-button/
+      ui/DeleteCategoryButton.vue
+      api/deleteBudgetCategory.ts
+  deleteBudgetIncome.ts        ← API без компонента: вызывается напрямую из index.vue
+```
+
+❌ Виджет **не рисует** таблицы и формы сам — делегирует в `entities/ui/` (через слоты) и sub-components.
+
+#### Правило sub-components
+
+- По умолчанию любой UI мутации (форма, кнопка, inline-edit) — sub-component в `components/` виджета
+- Каждый sub-component — отдельная папка `components/<name>/` с `ui/` и `api/` внутри
+- В `features/` выносить только если компонент нужен в 2+ виджетах
+- API без компонента (вызывается напрямую из `index.vue`) кладётся в корень виджета
+
+### `pages/<page-name>/`
+Только компонует виджеты. Никакой логики, никаких API-вызовов.
+
+```
+pages/budget/
+  BudgetPage.vue  ← <BudgetPageWidget />
+```
+
+## Соглашения по именованию
+
+| Что | Формат | Пример |
+|-----|--------|--------|
+| Папки слоёв и sub-components | kebab-case | `budget-category`, `editable-category-name` |
+| Файлы `.vue` компонентов | PascalCase | `BudgetCategoryTable.vue`, `EditableCategoryName.vue` |
+| Файлы `.ts` (api, lib) | camelCase | `budgetCategoryApi.ts`, `editBudgetCategoryName.ts` |
+
+## Запрещённые зависимости
+
+| Откуда | Нельзя импортировать |
+|--------|----------------------|
+| `entities` | `features`, `widgets`, `pages` |
+| `features` | `widgets`, `pages` |
+| `widgets` | `pages` |
+| `pages` | напрямую `entities` или `features` — только через `widgets` |
