@@ -1,60 +1,69 @@
 # Finance Tracker
 
-Fullstack-приложение для учёта бюджета и накоплений.
+Live demo: https://finance-tracker-eight-lilac.vercel.app/budget
 
-## Стек
+Full-stack приложение для учёта финансов, разработанное с использованием **AI-first подхода (Cursor + LLM)**.
 
-- **Backend:** FastAPI, SQLAlchemy 2, PostgreSQL, pytest
-- **Frontend:** Vue 3, TypeScript, Vite, Tailwind CSS, FSD-архитектура
+---
 
-## Запуск
+## 🚀 AI-First подход
+
+Проект разрабатывался с использованием **Cursor как основного инструмента разработки**, где большая часть кода генерировалась через LLM, а разработка строилась вокруг управления процессом генерации.
+
+Моя роль:
+- Декомпозиция задач на понятные шаги для AI
+- Формирование точных инструкций (prompts)
+- Формирование архитектурных решений (frontend + backend)
+- Настройка `.cursor/rules` и `.cursor/skills` для контроля генерации
+- Валидация результатов на уровне архитектуры и поведения системы
+
+### Основной принцип:
+- Человек → архитектура, контроль, валидация  
+- AI → реализация  
+
+---
+
+## 🧠 AI-инфраструктура
+
+В проекте настроена среда для стабильной AI-разработки:
+
+- `.cursor/rules` — правила для генерации кода (архитектура, стиль)
+- `.cursor/skills` — переиспользуемые паттерны для задач
+- `.cursor/hooks` — автоматизация типовых действий
+
+Это позволяет:
+- управлять качеством генерации
+- получать консистентный код
+- снижать необходимость ручного контроля
+
+---
+
+## 🧰 Стек
+
+- **Backend:** FastAPI, SQLAlchemy 2, PostgreSQL, pytest  
+- **Frontend:** Vue 3, TypeScript, Vite, Tailwind CSS  
+- **Архитектура фронтенда:** FSD  
+- **Инфраструктура:** Docker, docker-compose, Makefile  
+
+---
+
+## 🧪 Валидация AI-кода
+
+- Настройка `.cursor/rules` для контроля структуры и стиля
+- Использование `.cursor/skills` для стандартизации генерации
+- Backend тесты (pytest)
+- Линтинг (frontend + backend)
+- Проверка соответствия архитектуре
+
+---
+
+## 🚀 Запуск локально
 
 ```bash
 docker compose up --build
+cd frontend && npm run dev
 ```
 
 - API: http://localhost:8000
-- Frontend: http://localhost:5173 (dev: `cd frontend && npm run dev`)
+- Frontend: http://localhost:5173
 - Документация API: http://localhost:8000/docs
-
-## Тесты
-
-```bash
-docker compose exec backend python -m pytest tests/ -v
-```
-
-Тестовая БД `finance_tracker_test` создаётся автоматически через init-скрипт `docker/postgres/init/`.
-
-## Линтинг
-
-**Frontend:**
-```bash
-cd frontend && npm run lint       # проверка
-cd frontend && npm run lint:fix   # автоисправление
-cd frontend && npm run format     # prettier
-```
-
-**Backend:**
-```bash
-cd backend && ruff check .        # проверка
-cd backend && ruff check . --fix  # автоисправление
-cd backend && ruff format .       # форматирование
-```
-
-## Структура проекта
-
-```
-backend/
-  app/
-    api/        ← роутеры FastAPI
-    models.py   ← SQLAlchemy модели
-    schemas.py  ← Pydantic схемы
-    db.py       ← подключение к БД
-    main.py     ← точка входа
-
-frontend/src/   ← FSD-архитектура
-  shared/       ← переиспользуемая инфраструктура
-  entities/     ← бизнес-сущности
-  widgets/      ← виджеты страниц
-  pages/        ← компоновка страниц
-```
