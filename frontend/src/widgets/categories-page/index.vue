@@ -46,7 +46,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { fetchBudgetCategories, type BudgetCategory } from '@/entities/budget-category/api/budgetCategoryApi'
+import {
+  fetchBudgetCategories,
+  type BudgetCategory,
+} from '@/entities/budget-category/api/budgetCategoryApi'
 import BudgetCategoryTable from '@/entities/budget-category/ui/BudgetCategoryTable.vue'
 import EditableCategoryName from './components/editable-category-name/ui/EditableCategoryName.vue'
 import EditableCategoryBaseAmount from './components/editable-category-base-amount/ui/EditableCategoryBaseAmount.vue'
@@ -71,7 +74,7 @@ onMounted(async () => {
 })
 
 function onCategoryUpdated(updated: BudgetCategory) {
-  const idx = categories.value.findIndex(c => c.id === updated.id)
+  const idx = categories.value.findIndex((c) => c.id === updated.id)
   if (idx !== -1) {
     categories.value[idx] = updated
   }
@@ -82,6 +85,6 @@ function onCategoryCreated(created: BudgetCategory) {
 }
 
 function onCategoryDeleted(id: number) {
-  categories.value = categories.value.filter(c => c.id !== id)
+  categories.value = categories.value.filter((c) => c.id !== id)
 }
 </script>

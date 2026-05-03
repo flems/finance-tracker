@@ -39,9 +39,21 @@ import { editBudgetCategoryColor } from '../api/editBudgetCategoryColor'
 import type { BudgetCategory } from '@/entities/budget-category/api/budgetCategoryApi'
 
 const PRESETS = [
-  '#ef4444', '#f97316', '#eab308', '#22c55e', '#10b981',
-  '#14b8a6', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6',
-  '#a855f7', '#ec4899', '#f43f5e', '#64748b', '#78716c',
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#10b981',
+  '#14b8a6',
+  '#06b6d4',
+  '#3b82f6',
+  '#6366f1',
+  '#8b5cf6',
+  '#a855f7',
+  '#ec4899',
+  '#f43f5e',
+  '#64748b',
+  '#78716c',
 ]
 
 const props = defineProps<{ id: number; color: string | null }>()

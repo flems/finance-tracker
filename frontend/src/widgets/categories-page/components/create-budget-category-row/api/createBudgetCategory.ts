@@ -7,6 +7,8 @@ export interface CreateBudgetCategoryPayload {
   base_amount: number | null
 }
 
-export async function createBudgetCategory(payload: CreateBudgetCategoryPayload): Promise<BudgetCategory> {
+export async function createBudgetCategory(
+  payload: CreateBudgetCategoryPayload,
+): Promise<BudgetCategory> {
   return http.post<BudgetCategory>('/budget/categories', payload)
 }

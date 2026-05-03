@@ -31,13 +31,10 @@
         Выберите категории для распределения дохода (можно сделать это позже)
       </p>
 
-      <div
-        class="mt-3 min-w-0 max-w-full"
-        role="group"
-        aria-label="Выбор категорий распределения"
-      >
+      <div class="mt-3 min-w-0 max-w-full" role="group" aria-label="Выбор категорий распределения">
         <p v-if="!categoriesWithBase.length" class="text-sm text-gray-500">
-          Нет категорий с базовой суммой — задайте её в настройках бюджета или добавьте строки вручную после выплаты.
+          Нет категорий с базовой суммой — задайте её в настройках бюджета или добавьте строки
+          вручную после выплаты.
         </p>
         <div
           v-else
@@ -74,7 +71,14 @@
           viewBox="0 0 24 24"
           aria-hidden="true"
         >
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
         </svg>
         Добавить
@@ -143,7 +147,10 @@ function toHexRgb(color: string): string | null {
 }
 
 /** Тег категории: чёрный текст, заливка цветом с прозрачностью через суффикс `18`. */
-function categoryTagProps(color: string | null | undefined): { class: string; style?: Record<string, string> } {
+function categoryTagProps(color: string | null | undefined): {
+  class: string
+  style?: Record<string, string>
+} {
   const base =
     'block min-w-0 max-w-full truncate rounded-md px-2 py-0.5 text-sm font-medium leading-snug text-black'
   const hexRgb = color ? toHexRgb(color) : null
@@ -170,14 +177,20 @@ function setCategoryIncluded(categoryId: number, included: boolean): void {
   const cur = selectedCategoryIds.value
   const has = cur.includes(categoryId)
   if (included && !has) selectedCategoryIds.value = [...cur, categoryId]
-  if (!included && has) selectedCategoryIds.value = cur.filter(id => id !== categoryId)
+  if (!included && has) selectedCategoryIds.value = cur.filter((id) => id !== categoryId)
 }
 
 async function submit(): Promise<void> {
   if (isSaving.value) return
   const amt = Number(amount.value)
-  if (!Number.isFinite(amt) || amt <= 0) { toast.error('Укажите сумму дохода'); return }
-  if (!payoutDate.value) { toast.error('Выберите дату'); return }
+  if (!Number.isFinite(amt) || amt <= 0) {
+    toast.error('Укажите сумму дохода')
+    return
+  }
+  if (!payoutDate.value) {
+    toast.error('Выберите дату')
+    return
+  }
   isSaving.value = true
   try {
     const created = await createBudgetIncome({

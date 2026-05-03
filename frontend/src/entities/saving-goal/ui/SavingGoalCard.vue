@@ -29,7 +29,9 @@
           :style="{ left: `${getMilestonePercent(goal, m)}%` }"
         >
           <UiTooltip :text="`${m.toLocaleString('ru-RU')} ${goal.currency}`">
-            <div class="w-3 h-3 rounded-full bg-amber-500 border border-white shadow transition-transform duration-150 ease-out hover:scale-125" />
+            <div
+              class="w-3 h-3 rounded-full bg-amber-500 border border-white shadow transition-transform duration-150 ease-out hover:scale-125"
+            />
           </UiTooltip>
         </div>
       </div>
@@ -48,9 +50,7 @@
         </label>
       </div>
       <slot name="history-actions" />
-      <div v-if="!filteredHistory.length" class="text-xs text-gray-500">
-        Пока нет пополнений
-      </div>
+      <div v-if="!filteredHistory.length" class="text-xs text-gray-500">Пока нет пополнений</div>
       <ul class="divide-y divide-gray-100">
         <li
           v-for="entry in visibleHistory"
@@ -58,18 +58,29 @@
           class="py-2 text-sm flex items-center gap-2"
           :class="{
             'opacity-60': entry.is_planned,
-            'bg-amber-50 border-l-4 border-amber-500 pl-2 -ml-2': entry.reachesMilestone && !entry.is_planned,
+            'bg-amber-50 border-l-4 border-amber-500 pl-2 -ml-2':
+              entry.reachesMilestone && !entry.is_planned,
           }"
         >
           <div>
             <div class="flex items-center gap-2">
               <div
                 class="font-medium"
-                :class="entry.is_planned ? 'text-gray-500' : entry.reachesMilestone ? 'text-amber-700' : 'text-gray-900'"
+                :class="
+                  entry.is_planned
+                    ? 'text-gray-500'
+                    : entry.reachesMilestone
+                      ? 'text-amber-700'
+                      : 'text-gray-900'
+                "
               >
-                {{ entry.amount >= 0 ? '+' : '' }}{{ entry.amount.toLocaleString('ru-RU') }} {{ goal.currency }}
+                {{ entry.amount >= 0 ? '+' : '' }}{{ entry.amount.toLocaleString('ru-RU') }}
+                {{ goal.currency }}
               </div>
-              <span v-if="entry.is_planned" class="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+              <span
+                v-if="entry.is_planned"
+                class="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded"
+              >
                 Запланировано
               </span>
               <span
@@ -126,9 +137,11 @@ const stageTotal = computed(() => getStageTotal(props.goal))
 const progressToNextTarget = computed(() => getProgressToNextTarget(props.goal))
 const stageIndex = computed(() => getCurrentStageIndex(props.goal))
 const historyWithBalance = computed(() => getHistoryWithBalance(props.goal))
-const hasPlanned = computed(() => historyWithBalance.value.some(e => e.is_planned))
+const hasPlanned = computed(() => historyWithBalance.value.some((e) => e.is_planned))
 const filteredHistory = computed(() =>
-  showPlanned.value ? historyWithBalance.value : historyWithBalance.value.filter(e => !e.is_planned),
+  showPlanned.value
+    ? historyWithBalance.value
+    : historyWithBalance.value.filter((e) => !e.is_planned),
 )
 const visibleHistory = computed(() =>
   expanded.value || filteredHistory.value.length <= 5

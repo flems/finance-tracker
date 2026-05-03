@@ -4,9 +4,11 @@
       :id="triggerSlotIsUsed ? buttonId : undefined"
       type="button"
       class="flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 transition-colors"
-      :class="modelValue
-        ? 'bg-green-500 border-green-500 text-white'
-        : 'border-gray-300 hover:border-green-400 text-transparent'"
+      :class="
+        modelValue
+          ? 'bg-green-500 border-green-500 text-white'
+          : 'border-gray-300 hover:border-green-400 text-transparent'
+      "
       :title="title"
       @click="toggle"
     >
@@ -18,11 +20,7 @@
         />
       </svg>
     </button>
-    <label
-      v-if="triggerSlotIsUsed"
-      :for="buttonId"
-      class="min-w-0 cursor-pointer select-none"
-    >
+    <label v-if="triggerSlotIsUsed" :for="buttonId" class="min-w-0 cursor-pointer select-none">
       <slot name="trigger" />
     </label>
   </div>

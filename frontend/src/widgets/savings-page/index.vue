@@ -7,7 +7,11 @@
         @click="showForm = true"
       >
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+          <path
+            fill-rule="evenodd"
+            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+            clip-rule="evenodd"
+          />
         </svg>
         Новая цель
       </button>
@@ -15,10 +19,7 @@
 
     <div v-if="showForm" class="bg-white rounded-lg shadow p-6">
       <h3 class="text-base font-semibold text-gray-900 mb-4">Создать цель накопления</h3>
-      <CreateSavingGoalForm
-        @created="onGoalCreated"
-        @cancel="showForm = false"
-      />
+      <CreateSavingGoalForm @created="onGoalCreated" @cancel="showForm = false" />
     </div>
 
     <div v-if="isLoading" class="flex items-center justify-center py-12 text-gray-400">
@@ -36,10 +37,17 @@
       <div v-else class="grid gap-6 md:grid-cols-2">
         <SavingGoalCard v-for="goal in goals" :key="goal.id" :goal="goal">
           <template #actions>
-            <DeleteSavingGoalButton :goal-id="goal.id" :goal-title="goal.title" @deleted="onGoalDeleted" />
+            <DeleteSavingGoalButton
+              :goal-id="goal.id"
+              :goal-title="goal.title"
+              @deleted="onGoalDeleted"
+            />
           </template>
           <template #history-actions>
-            <AddSavingEntryButton :goal-id="goal.id" @created="(entry) => onEntryCreated(goal, entry)" />
+            <AddSavingEntryButton
+              :goal-id="goal.id"
+              @created="(entry) => onEntryCreated(goal, entry)"
+            />
           </template>
           <template #entry-actions="{ entry }">
             <DeleteSavingEntryButton :entry="entry" @deleted="(id) => onEntryDeleted(goal, id)" />
@@ -66,7 +74,6 @@ const isLoading = ref(false)
 const error = ref<string | null>(null)
 const showForm = ref(false)
 
-
 onMounted(async () => {
   isLoading.value = true
   try {
@@ -84,18 +91,19 @@ function onGoalCreated(goal: SavingGoal) {
 }
 
 function onGoalDeleted(goalId: number) {
-  goals.value = goals.value.filter(g => g.id !== goalId)
+  goals.value = goals.value.filter((g) => g.id !== goalId)
 }
 
 function onEntryDeleted(goal: SavingGoal, entryId: string) {
-  const entry = goal.history.find(h => h.id === entryId)
+  const entry = goal.history.find((h) => h.id === entryId)
   if (entry && !entry.is_planned) {
     goal.current -= entry.amount
-    goal.percent = goal.target_amount > 0
-      ? Math.min(100, Math.round((goal.current / goal.target_amount) * 100))
-      : 0
+    goal.percent =
+      goal.target_amount > 0
+        ? Math.min(100, Math.round((goal.current / goal.target_amount) * 100))
+        : 0
   }
-  goal.history = goal.history.filter(h => h.id !== entryId)
+  goal.history = goal.history.filter((h) => h.id !== entryId)
 }
 
 function onEntryCreated(goal: SavingGoal, entry: SavingEntryOut) {
@@ -110,9 +118,10 @@ function onEntryCreated(goal: SavingGoal, entry: SavingEntryOut) {
   goal.history.push(historyEntry)
   if (!entry.is_planned) {
     goal.current += entry.amount
-    goal.percent = goal.target_amount > 0
-      ? Math.min(100, Math.round((goal.current / goal.target_amount) * 100))
-      : 0
+    goal.percent =
+      goal.target_amount > 0
+        ? Math.min(100, Math.round((goal.current / goal.target_amount) * 100))
+        : 0
   }
 }
 </script>

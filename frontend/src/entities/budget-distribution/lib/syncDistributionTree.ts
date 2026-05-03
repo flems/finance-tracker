@@ -1,9 +1,16 @@
-import type { BudgetDistributionIncome, BudgetDistributionItem, BudgetDistributionResponse } from '../api/budgetDistributionApi'
+import type {
+  BudgetDistributionIncome,
+  BudgetDistributionItem,
+  BudgetDistributionResponse,
+} from '../api/budgetDistributionApi'
 
-export function applyPatchedItem(dist: BudgetDistributionResponse, updated: BudgetDistributionItem): void {
+export function applyPatchedItem(
+  dist: BudgetDistributionResponse,
+  updated: BudgetDistributionItem,
+): void {
   for (const mo of dist.months) {
     for (const inc of mo.incomes) {
-      const idx = inc.items.findIndex(i => i.id === updated.id)
+      const idx = inc.items.findIndex((i) => i.id === updated.id)
       if (idx !== -1) {
         inc.items[idx] = updated
         return
@@ -15,7 +22,7 @@ export function applyPatchedItem(dist: BudgetDistributionResponse, updated: Budg
 export function removeBudgetItemById(dist: BudgetDistributionResponse, itemId: number): void {
   for (const mo of dist.months) {
     for (const inc of mo.incomes) {
-      const idx = inc.items.findIndex(i => i.id === itemId)
+      const idx = inc.items.findIndex((i) => i.id === itemId)
       if (idx !== -1) {
         inc.items.splice(idx, 1)
         return
@@ -42,7 +49,7 @@ export function appendItemToIncome(
   item: BudgetDistributionItem,
 ): void {
   for (const mo of dist.months) {
-    const inc = mo.incomes.find(i => i.id === incomeId)
+    const inc = mo.incomes.find((i) => i.id === incomeId)
     if (inc) {
       inc.items.push(item)
       sortItemsLikeApi(inc.items)
@@ -51,9 +58,12 @@ export function appendItemToIncome(
   }
 }
 
-export function mergeCreatedIncome(dist: BudgetDistributionResponse, created: BudgetDistributionIncome): void {
+export function mergeCreatedIncome(
+  dist: BudgetDistributionResponse,
+  created: BudgetDistributionIncome,
+): void {
   const [y, m] = created.payout_date.split('-').map(Number)
-  let month = dist.months.find(x => x.year === y && x.month === m)
+  let month = dist.months.find((x) => x.year === y && x.month === m)
   if (!month) {
     month = { year: y, month: m, incomes: [] }
     dist.months.push(month)
@@ -72,7 +82,7 @@ export function mergeCreatedIncome(dist: BudgetDistributionResponse, created: Bu
 export function removeIncomeById(dist: BudgetDistributionResponse, incomeId: number): void {
   for (let mi = 0; mi < dist.months.length; mi++) {
     const mo = dist.months[mi]
-    const ii = mo.incomes.findIndex(i => i.id === incomeId)
+    const ii = mo.incomes.findIndex((i) => i.id === incomeId)
     if (ii !== -1) {
       mo.incomes.splice(ii, 1)
       if (!mo.incomes.length) dist.months.splice(mi, 1)

@@ -1,12 +1,11 @@
 <template>
-  <tr
-    class="relative group"
-    :class="item.is_paid ? 'opacity-60' : ''"
-    :style="rowStyle"
-  >
+  <tr class="relative group" :class="item.is_paid ? 'opacity-60' : ''" :style="rowStyle">
     <td
       class="px-6 py-4 whitespace-nowrap text-sm border-l-4 transition-colors"
-      :class="[categoryColor ? '' : 'border-transparent', item.is_paid ? 'line-through text-gray-500' : 'text-gray-900']"
+      :class="[
+        categoryColor ? '' : 'border-transparent',
+        item.is_paid ? 'line-through text-gray-500' : 'text-gray-900',
+      ]"
       :style="firstCellStyle"
     >
       {{ item.category_name }}
@@ -41,15 +40,28 @@
           @click="saveAmount"
         >
           <svg v-if="!isSavingAmount" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
           </svg>
           <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
           </svg>
         </button>
       </div>
-      <span v-else class="flex min-h-7 items-center tabular-nums">{{ formatAmount(item.amount) }}</span>
+      <span v-else class="flex min-h-7 items-center tabular-nums">{{
+        formatAmount(item.amount)
+      }}</span>
     </td>
 
     <td
@@ -79,10 +91,21 @@
           @click="saveComment"
         >
           <svg v-if="!isSavingComment" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
           </svg>
           <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
           </svg>
         </button>
@@ -106,7 +129,11 @@
         @click="handleDelete"
       >
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+          <path
+            fill-rule="evenodd"
+            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+            clip-rule="evenodd"
+          />
         </svg>
       </button>
     </td>
@@ -135,7 +162,7 @@ const emit = defineEmits<{
 }>()
 
 const categoryColor = computed(
-  () => props.categories.find(c => c.id === props.item.category_id)?.color ?? null,
+  () => props.categories.find((c) => c.id === props.item.category_id)?.color ?? null,
 )
 const rowStyle = computed(() =>
   categoryColor.value ? { backgroundColor: `${categoryColor.value}18` } : {},
@@ -173,8 +200,14 @@ function parseAmountFromInput(raw: number | ''): number | null {
 async function saveAmount() {
   if (isSavingAmount.value || isCancellingAmount.value) return
   const amt = parseAmountFromInput(editingAmount.value)
-  if (amt === null) { toast.error('Укажите корректную сумму (неотрицательное число)'); return }
-  if (amt === props.item.amount) { cancelEditAmount(); return }
+  if (amt === null) {
+    toast.error('Укажите корректную сумму (неотрицательное число)')
+    return
+  }
+  if (amt === props.item.amount) {
+    cancelEditAmount()
+    return
+  }
   isEditingAmount.value = false
   isSavingAmount.value = true
   try {
@@ -204,7 +237,10 @@ function startEditComment() {
   editingComment.value = props.item.comment ?? ''
   isCancellingComment.value = false
   isEditingComment.value = true
-  nextTick(() => { commentInputRef.value?.focus(); commentInputRef.value?.select() })
+  nextTick(() => {
+    commentInputRef.value?.focus()
+    commentInputRef.value?.select()
+  })
 }
 
 function cancelEditComment() {
@@ -216,7 +252,10 @@ async function saveComment() {
   if (isSavingComment.value || isCancellingComment.value) return
   const trimmed = editingComment.value.trim()
   const oldTrimmed = (props.item.comment ?? '').trim()
-  if (trimmed === oldTrimmed) { cancelEditComment(); return }
+  if (trimmed === oldTrimmed) {
+    cancelEditComment()
+    return
+  }
   isEditingComment.value = false
   isSavingComment.value = true
   try {

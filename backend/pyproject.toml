@@ -1,0 +1,28 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "I",   # isort
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
+]
+ignore = [
+  "E501",   # line too long — handled by formatter
+  # COM812 (missing-trailing-comma) намеренно не включаем:
+  # ruff formatter сам управляет запятыми — включение COM812 создало бы конфликт
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+# FastAPI dependency injection: Depends() in defaults is intentional.
+[tool.ruff.lint.per-file-ignores]
+"app/api/**" = ["B008"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

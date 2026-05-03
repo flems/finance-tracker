@@ -8,6 +8,8 @@ export interface CreateBudgetIncomeBody {
   category_ids?: number[]
 }
 
-export function createBudgetIncome(body: CreateBudgetIncomeBody): Promise<BudgetDistributionIncome> {
+export function createBudgetIncome(
+  body: CreateBudgetIncomeBody,
+): Promise<BudgetDistributionIncome> {
   return http.post<BudgetDistributionIncome>('/budget/incomes', body)
 }

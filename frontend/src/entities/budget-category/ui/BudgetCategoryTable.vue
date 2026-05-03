@@ -33,9 +33,15 @@
         <td class="pr-4 text-gray-500">{{ category.type ?? '—' }}</td>
         <td class="relative pr-3 text-right text-gray-700">
           <slot name="base_amount" :category="category">
-            {{ category.base_amount != null ? category.base_amount.toLocaleString('ru-RU') + ' ₽' : '—' }}
+            {{
+              category.base_amount != null
+                ? category.base_amount.toLocaleString('ru-RU') + ' ₽'
+                : '—'
+            }}
           </slot>
-          <span class="absolute -right-7 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span
+            class="absolute -right-7 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
             <slot name="actions" :category="category" />
           </span>
         </td>

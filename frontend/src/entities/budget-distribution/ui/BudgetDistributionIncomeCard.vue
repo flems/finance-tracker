@@ -13,16 +13,24 @@
         <table class="w-full table-fixed">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[38%]">
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[38%]"
+              >
                 Категория
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]"
+              >
                 Сумма (₽)
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 Комментарий
               </th>
-              <th class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12" />
+              <th
+                class="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12"
+              />
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
@@ -54,7 +62,13 @@
 
 <script setup lang="ts">
 import type { BudgetDistributionIncome } from '../api/budgetDistributionApi'
-import { allocated, formatAmount, formatShortDate, totalColorClass, totalComment } from '../lib/formatters'
+import {
+  allocated,
+  formatAmount,
+  formatShortDate,
+  totalColorClass,
+  totalComment,
+} from '../lib/formatters'
 
 defineProps<{
   income: BudgetDistributionIncome

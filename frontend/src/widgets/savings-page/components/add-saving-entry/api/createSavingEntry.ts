@@ -15,6 +15,9 @@ export interface SavingEntryOut {
   is_planned: boolean
 }
 
-export function createSavingEntry(goalId: number, body: CreateSavingEntryBody): Promise<SavingEntryOut> {
+export function createSavingEntry(
+  goalId: number,
+  body: CreateSavingEntryBody,
+): Promise<SavingEntryOut> {
   return http.post<SavingEntryOut>(`/savings/goals/${goalId}/entries`, body)
 }

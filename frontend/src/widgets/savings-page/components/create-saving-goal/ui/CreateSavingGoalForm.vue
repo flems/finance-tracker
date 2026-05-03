@@ -22,7 +22,8 @@
           <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
         </select>
         <p class="text-xs text-gray-400 leading-relaxed">
-          Если выбрать категорию, все операции по ней из таблицы распределения доходов будут автоматически появляться в истории этой цели.
+          Если выбрать категорию, все операции по ней из таблицы распределения доходов будут
+          автоматически появляться в истории этой цели.
         </p>
       </div>
 
@@ -80,7 +81,13 @@
           class="inline-flex items-center gap-1 bg-amber-50 text-amber-800 text-xs px-2 py-1 rounded-full border border-amber-200"
         >
           {{ m.toLocaleString('ru-RU') }} {{ form.currency }}
-          <button type="button" class="hover:text-red-500 transition-colors" @click="removeMilestone(i)">×</button>
+          <button
+            type="button"
+            class="hover:text-red-500 transition-colors"
+            @click="removeMilestone(i)"
+          >
+            ×
+          </button>
         </span>
       </div>
       <div class="flex items-center gap-2">
@@ -118,10 +125,21 @@
         @click="submit"
       >
         <svg v-if="!isSaving" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+          <path
+            fill-rule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clip-rule="evenodd"
+          />
         </svg>
         <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
         </svg>
         Создать
@@ -171,7 +189,10 @@ onMounted(async () => {
 function addMilestone() {
   const val = Number(milestoneInput.value)
   if (!val || val <= 0) return
-  if (form.milestones.includes(val)) { toast.error('Такой этап уже добавлен'); return }
+  if (form.milestones.includes(val)) {
+    toast.error('Такой этап уже добавлен')
+    return
+  }
   form.milestones = [...form.milestones, val].sort((a, b) => a - b)
   milestoneInput.value = ''
 }
@@ -181,7 +202,10 @@ function removeMilestone(index: number) {
 }
 
 async function submit() {
-  if (!form.title.trim()) { toast.error('Укажите название'); return }
+  if (!form.title.trim()) {
+    toast.error('Укажите название')
+    return
+  }
   isSaving.value = true
   try {
     const created = await createSavingGoal({

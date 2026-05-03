@@ -77,8 +77,14 @@ function openModal() {
 
 async function submit() {
   const amt = Number(form.amount)
-  if (!amt) { toast.error('Укажите сумму'); return }
-  if (!form.date) { toast.error('Укажите дату'); return }
+  if (!amt) {
+    toast.error('Укажите сумму')
+    return
+  }
+  if (!form.date) {
+    toast.error('Укажите дату')
+    return
+  }
   isSaving.value = true
   try {
     const created = await createSavingEntry(props.goalId, {

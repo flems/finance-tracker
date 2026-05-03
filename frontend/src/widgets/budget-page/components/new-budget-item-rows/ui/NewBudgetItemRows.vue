@@ -7,8 +7,17 @@
         :disabled="!categories.length"
         @click="startAdd"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-4 h-4"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+            clip-rule="evenodd"
+          />
         </svg>
         Добавить
       </button>
@@ -52,12 +61,10 @@
       />
     </td>
     <td class="px-2 py-3 text-center relative">
-      <CheckButton
-        v-model="form.is_paid"
-        title="Сразу отметить как выполнено"
-        class="mx-auto"
-      />
-      <div class="absolute top-0 left-full h-full flex flex-col w-8 ml-1 rounded overflow-hidden border border-blue-200 shadow-sm z-10">
+      <CheckButton v-model="form.is_paid" title="Сразу отметить как выполнено" class="mx-auto" />
+      <div
+        class="absolute top-0 left-full h-full flex flex-col w-8 ml-1 rounded overflow-hidden border border-blue-200 shadow-sm z-10"
+      >
         <button
           type="button"
           class="flex flex-1 items-center justify-center bg-white text-blue-600 hover:bg-blue-50 disabled:opacity-40 transition-colors"
@@ -66,10 +73,21 @@
           @click="save"
         >
           <svg v-if="!isSaving" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
           </svg>
           <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
           </svg>
         </button>
@@ -80,7 +98,11 @@
           @click="cancel"
         >
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
           </svg>
         </button>
       </div>
@@ -118,7 +140,7 @@ const form = reactive({
 })
 
 const selectedCategory = computed(
-  () => props.categories.find(c => c.id === form.category_id) ?? null,
+  () => props.categories.find((c) => c.id === form.category_id) ?? null,
 )
 
 const newItemRowStyle = computed(() => {
@@ -151,9 +173,15 @@ function cancel() {
 
 async function save() {
   if (isSaving.value) return
-  if (!form.category_id) { toast.error('Выберите категорию'); return }
+  if (!form.category_id) {
+    toast.error('Выберите категорию')
+    return
+  }
   const amtRaw = form.amount === '' ? 0 : Number(form.amount)
-  if (!Number.isFinite(amtRaw) || amtRaw < 0) { toast.error('Укажите корректную сумму (неотрицательное число)'); return }
+  if (!Number.isFinite(amtRaw) || amtRaw < 0) {
+    toast.error('Укажите корректную сумму (неотрицательное число)')
+    return
+  }
   const amt = Math.round(amtRaw)
   isSaving.value = true
   try {

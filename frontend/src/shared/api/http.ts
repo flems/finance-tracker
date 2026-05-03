@@ -35,7 +35,7 @@ async function handleError(res: Response): Promise<never> {
   let code = `HTTP_${res.status}`
   let message = `${res.status} ${res.statusText}`
   try {
-    const body = await res.json() as Partial<ApiError>
+    const body = (await res.json()) as Partial<ApiError>
     if (body.status === 'error' && body.code && body.message) {
       code = body.code
       message = body.message

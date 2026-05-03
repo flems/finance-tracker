@@ -5,7 +5,9 @@ def test_list_categories_empty(client):
 
 
 def test_create_category(client):
-    r = client.post("/budget/categories", json={"name": "Аренда", "type": "rent", "base_amount": 50000})
+    r = client.post(
+        "/budget/categories", json={"name": "Аренда", "type": "rent", "base_amount": 50000}
+    )
     assert r.status_code == 201
     data = r.json()
     assert data["name"] == "Аренда"
@@ -68,14 +70,18 @@ def test_update_category_name_not_found(client):
 
 
 def test_update_base_amount(client):
-    created = client.post("/budget/categories", json={"name": "Аренда", "type": "rent", "base_amount": 50000}).json()
+    created = client.post(
+        "/budget/categories", json={"name": "Аренда", "type": "rent", "base_amount": 50000}
+    ).json()
     r = client.patch(f"/budget/categories/{created['id']}/base_amount", json={"base_amount": 60000})
     assert r.status_code == 200
     assert r.json()["base_amount"] == 60000
 
 
 def test_update_base_amount_to_null(client):
-    created = client.post("/budget/categories", json={"name": "Аренда", "type": "rent", "base_amount": 50000}).json()
+    created = client.post(
+        "/budget/categories", json={"name": "Аренда", "type": "rent", "base_amount": 50000}
+    ).json()
     r = client.patch(f"/budget/categories/{created['id']}/base_amount", json={"base_amount": None})
     assert r.status_code == 200
     assert r.json()["base_amount"] is None

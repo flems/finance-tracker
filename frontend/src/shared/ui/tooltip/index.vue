@@ -19,9 +19,7 @@ const props = defineProps<{
 }>()
 
 const positionClass = computed(() =>
-  props.position === 'bottom'
-    ? 'top-full mt-1'
-    : 'bottom-full mb-1'
+  props.position === 'bottom' ? 'top-full mt-1' : 'bottom-full mb-1',
 )
 </script>
 
@@ -30,4 +28,3 @@ const positionClass = computed(() =>
   opacity: 1;
 }
 </style>
-

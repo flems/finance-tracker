@@ -3,9 +3,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import app.models  # noqa: F401
 from app.db import Base, get_db
 from app.main import app as fastapi_app
-import app.models  # noqa: F401
 
 TEST_DATABASE_URL = "postgresql://sport_user:sport_password@db:5432/sport_tracker_test"
 

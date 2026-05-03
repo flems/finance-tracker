@@ -1,94 +1,99 @@
 from datetime import date
-from typing import List, Literal
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
 class ErrorResponse(BaseModel):
-  status: Literal["error"] = "error"
-  code: str
-  message: str
+    status: Literal["error"] = "error"
+    code: str
+    message: str
 
 
 class BudgetCategoryOut(BaseModel):
-  id: int
-  name: str
-  type: str
-  base_amount: int | None = None
-  color: str | None = None
+    id: int
+    name: str
+    type: str
+    base_amount: int | None = None
+    color: str | None = None
 
-  class Config:
-    from_attributes = True
+    class Config:
+        from_attributes = True
 
 
 class BudgetCategoryCreate(BaseModel):
-  name: str
-  type: str
-  base_amount: int | None = None
+    name: str
+    type: str
+    base_amount: int | None = None
 
 
 class BudgetCategoryUpdateName(BaseModel):
-  name: str
+    name: str
 
 
 class BudgetCategoryUpdateBaseAmount(BaseModel):
-  base_amount: int | None
+    base_amount: int | None
 
 
 class BudgetCategoryUpdateColor(BaseModel):
-  color: str | None
+    color: str | None
 
 
 class BudgetIncomeCreate(BaseModel):
-  payout_date: date
-  amount: int
-  category_ids: List[int] = Field(default_factory=list)
+    payout_date: date
+    amount: int
+    category_ids: list[int] = Field(default_factory=list)
+
+
+class BudgetIncomeUpdate(BaseModel):
+    payout_date: date | None = None
+    amount: int | None = None
 
 
 class BudgetItemOut(BaseModel):
-  id: int
-  income_id: int
-  category_id: int
-  category_name: str
-  amount: int
-  comment: str | None = None
-  is_paid: bool
-  sort_order: int | None = None
+    id: int
+    income_id: int
+    category_id: int
+    category_name: str
+    amount: int
+    comment: str | None = None
+    is_paid: bool
+    sort_order: int | None = None
 
 
 class BudgetIncomeOut(BaseModel):
-  id: int
-  payout_date: date
-  amount: int
-  items: List[BudgetItemOut]
+    id: int
+    payout_date: date
+    amount: int
+    items: list[BudgetItemOut]
 
 
 class BudgetCalendarMonthOut(BaseModel):
-  year: int
-  month: int
-  incomes: List[BudgetIncomeOut]
+    year: int
+    month: int
+    incomes: list[BudgetIncomeOut]
 
 
 class BudgetDistributionOut(BaseModel):
-  year: int | None = None
-  months: List[BudgetCalendarMonthOut]
+    year: int | None = None
+    months: list[BudgetCalendarMonthOut]
 
 
 class BudgetItemCreate(BaseModel):
-  income_id: int
-  category_id: int
-  amount: int | None = None
-  comment: str | None = None
-  is_paid: bool = False
-  sort_order: int | None = None
+    income_id: int
+    category_id: int
+    amount: int | None = None
+    comment: str | None = None
+    is_paid: bool = False
+    sort_order: int | None = None
 
 
 class BudgetItemUpdate(BaseModel):
-  category_id: int | None = None
-  amount: int | None = None
-  comment: str | None = None
-  is_paid: bool | None = None
-  sort_order: int | None = None
+    category_id: int | None = None
+    amount: int | None = None
+    comment: str | None = None
+    is_paid: bool | None = None
+    sort_order: int | None = None
 
 
 class SavingGoalHistoryEntry(BaseModel):

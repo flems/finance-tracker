@@ -90,6 +90,7 @@ color: str | null   — hex-цвет (#rrggbb), например #ef4444
 |---|---|---|
 | `GET` | `/budget/distribution` | опционально `?year=`; без года — все выплаты по календарным месяцам; с `year=` — только этот год |
 | `POST` | `/budget/incomes` | создать выплату (`payout_date`, `amount`), опционально `category_ids: number[]`, `201` |
+| `PATCH` | `/budget/incomes/{id}` | частично: `payout_date`, `amount` (оба опциональны), `200` |
 | `DELETE` | `/budget/incomes/{id}` | удалить выплату и все строки (`CASCADE`), `204` |
 | `POST` | `/budget/items` | строка распределения: `income_id`, `category_id`, опционально `amount`, `comment`, `is_paid` |
 | `PATCH` | `/budget/items/{id}` | частично: `category_id`, `amount`, `comment`, `is_paid`, `sort_order` |

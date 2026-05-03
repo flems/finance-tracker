@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.db import get_db
-from app.models import BudgetCategory, BudgetIncome, BudgetItem, SavingGoal, SavingEntry
+from app.models import BudgetCategory, BudgetIncome, BudgetItem, SavingEntry, SavingGoal
 from app.schemas import (
     SavingEntryCreate,
     SavingEntryOut,
@@ -17,34 +17,38 @@ from app.schemas import (
 router = APIRouter(prefix="/savings", tags=["savings"])
 
 
-def _build_goal_out(goal: SavingGoal, budget_rows: list[tuple], entries: list[SavingEntry]) -> SavingGoalOut:
+def _build_goal_out(
+    goal: SavingGoal, budget_rows: list[tuple], entries: list[SavingEntry]
+) -> SavingGoalOut:
     today = date.today()
 
     history: list[SavingGoalHistoryEntry] = []
 
     for item, payout_date in budget_rows:
-        history.append(SavingGoalHistoryEntry(
-            id=f"item-{item.id}",
-            date=payout_date,
-            amount=item.amount,
-            comment=item.comment,
-            is_planned=payout_date > today,
-            deletable=False,
-        ))
+        history.append(
+            SavingGoalHistoryEntry(
+                id=f"item-{item.id}",
+                date=payout_date,
+                amount=item.amount,
+                comment=item.comment,
+                is_planned=payout_date > today,
+                deletable=False,
+            )
+        )
 
     for entry in entries:
-        history.append(SavingGoalHistoryEntry(
-            id=f"entry-{entry.id}",
-            date=entry.date,
-            amount=entry.amount,
-            comment=entry.comment,
-            is_planned=entry.date > today,
-            deletable=True,
-        ))
+        history.append(
+            SavingGoalHistoryEntry(
+                id=f"entry-{entry.id}",
+                date=entry.date,
+                amount=entry.amount,
+                comment=entry.comment,
+                is_planned=entry.date > today,
+                deletable=True,
+            )
+        )
 
-    current = goal.initial_amount + sum(
-        h.amount for h in history if not h.is_planned
-    )
+    current = goal.initial_amount + sum(h.amount for h in history if not h.is_planned)
     percent = min(100, round(current / goal.target_amount * 100)) if goal.target_amount > 0 else 0
 
     return SavingGoalOut(
@@ -65,11 +69,15 @@ def _build_goal_out(goal: SavingGoal, budget_rows: list[tuple], entries: list[Sa
 
 @router.get("/goals", response_model=list[SavingGoalOut])
 def get_saving_goals(db: Session = Depends(get_db)):
-    goals = db.execute(
-        select(SavingGoal)
-        .options(selectinload(SavingGoal.category), selectinload(SavingGoal.entries))
-        .order_by(SavingGoal.id)
-    ).scalars().all()
+    goals = (
+        db.execute(
+            select(SavingGoal)
+            .options(selectinload(SavingGoal.category), selectinload(SavingGoal.entries))
+            .order_by(SavingGoal.id)
+        )
+        .scalars()
+        .all()
+    )
 
     result = []
     for goal in goals:
@@ -107,7 +115,6 @@ def create_saving_goal(body: SavingGoalCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(goal)
 
-    today = date.today()
     initial = goal.initial_amount
     return SavingGoalOut(
         id=goal.id,
@@ -120,7 +127,9 @@ def create_saving_goal(body: SavingGoalCreate, db: Session = Depends(get_db)):
         category_name=cat.name if cat else None,
         milestones=goal.milestones or [],
         current=initial,
-        percent=min(100, round(initial / goal.target_amount * 100)) if goal.target_amount > 0 else 0,
+        percent=min(100, round(initial / goal.target_amount * 100))
+        if goal.target_amount > 0
+        else 0,
         history=[],
     )
 
