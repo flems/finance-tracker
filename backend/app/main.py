@@ -53,13 +53,15 @@ app = FastAPI(title="Finance Tracker", lifespan=lifespan)
 
 app.add_exception_handler(AppError, app_error_handler)
 
-# CORS: разрешаем запросы с фронта (Vite на 5173 порту)
-origins = [
+_DEFAULT_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
 ]
+
+_extra_origins = os.getenv("CORS_ORIGINS", "")
+origins = _DEFAULT_ORIGINS + [o.strip() for o in _extra_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
