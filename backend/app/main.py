@@ -1,5 +1,4 @@
 import os
-import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -21,13 +20,8 @@ def _reset_budget_payroll_tables_if_requested() -> None:
     app_models.BudgetIncome.__table__.drop(bind=engine, checkfirst=True)
 
 
-def _should_validate_budget_tables() -> bool:
-    """При pytest worker импортит _pytest — проверку dev-БД пропускаем (контуры URL разъехались)."""
-    return not any(mod.startswith("_pytest") for mod in sys.modules)
-
-
 def _ensure_budget_items_schema_or_fail() -> None:
-    if not _should_validate_budget_tables():
+    if os.getenv("PYTEST_CURRENT_TEST"):
         return
     inspector = inspect(engine)
     if not inspector.has_table("budget_items"):
@@ -39,7 +33,7 @@ def _ensure_budget_items_schema_or_fail() -> None:
         "БД устарела: в таблице budget_items нет колонки income_id. SQLAlchemy create_all() только создаёт "
         "новые таблицы и не меняет уже существующие.\n\n"
         "Исправление (удалятся только выплаты и строки распределения, категории останутся): "
-        "docker compose exec db psql -U sport_user -d sport_tracker -c "
+        "docker compose exec db psql -U finance_user -d finance_tracker -c "
         '"DROP TABLE IF EXISTS budget_items CASCADE; DROP TABLE IF EXISTS budget_incomes CASCADE;" '
         "и затем docker compose restart backend.\n\n"
         "Или один раз задайте в environment backend переменную RESET_BUDGET_SCHEMA=1 и перезапустите контейнер, "

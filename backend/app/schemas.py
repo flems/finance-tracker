@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ErrorResponse(BaseModel):
@@ -11,14 +11,13 @@ class ErrorResponse(BaseModel):
 
 
 class BudgetCategoryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     type: str
     base_amount: int | None = None
     color: str | None = None
-
-    class Config:
-        from_attributes = True
 
 
 class BudgetCategoryCreate(BaseModel):
@@ -106,6 +105,8 @@ class SavingGoalHistoryEntry(BaseModel):
 
 
 class SavingGoalOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     title: str
     comment: str | None = None
@@ -119,9 +120,6 @@ class SavingGoalOut(BaseModel):
     percent: int
     history: list[SavingGoalHistoryEntry]
 
-    class Config:
-        from_attributes = True
-
 
 class SavingGoalCreate(BaseModel):
     title: str
@@ -130,7 +128,7 @@ class SavingGoalCreate(BaseModel):
     currency: str = "₽"
     initial_amount: int = 0
     category_id: int | None = None
-    milestones: list[int] = []
+    milestones: list[int] = Field(default_factory=list)
 
 
 class SavingEntryCreate(BaseModel):
@@ -140,12 +138,11 @@ class SavingEntryCreate(BaseModel):
 
 
 class SavingEntryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     goal_id: int
     amount: int
     comment: str | None = None
     date: date
     is_planned: bool
-
-    class Config:
-        from_attributes = True

@@ -1,0 +1,68 @@
+---
+description: Соглашения по коду бэкенда на FastAPI + SQLAlchemy + Pydantic v2. Применять при любой работе с backend/.
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Соглашения бэкенда
+
+## Ошибки — только AppError
+
+Никогда не использовать `HTTPException` напрямую. Все ошибки — через `AppError` из `app/errors.py`:
+
+```python
+from app.errors import AppError
+
+raise AppError(404, "NOT_FOUND", "Категория не найдена")
+raise AppError(409, "DUPLICATE_TYPE", "Категория с таким типом уже существует")
+raise AppError(422, "HTTP_422", "Недостаточно данных для операции")
+```
+
+Формат ответа клиенту: `{ "status": "error", "code": "...", "message": "..." }`  
+`message` — на русском, для пользователя. `code` — UPPER_SNAKE_CASE, для фронта.
+
+## Pydantic v2 стиль
+
+```python
+# ✅ правильно
+from pydantic import BaseModel, ConfigDict, Field
+
+class MyModel(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    items: list[int] = Field(default_factory=list)
+
+# ❌ неправильно
+from typing import List
+
+class MyModel(BaseModel):
+    class Config:
+        from_attributes = True
+
+    items: List[int] = []
+```
+
+- `model_config = ConfigDict(...)` вместо вложенного `class Config`
+- `list[int]` / `dict[str, int]` вместо `List` / `Dict` из `typing`
+- `Field(default_factory=list)` вместо `= []` для изменяемых дефолтов
+
+## Pytest-режим
+
+Для пропуска dev-только проверок при тестах использовать стандартную переменную окружения pytest:
+
+```python
+import os
+
+if os.getenv("PYTEST_CURRENT_TEST"):
+    return  # пропускаем проверку в тестах
+```
+
+Не использовать `sys.modules` для обнаружения pytest.
+
+## Линтинг
+
+После изменений запустить:
+
+```bash
+cd backend && ruff check . --fix && ruff format .
+```

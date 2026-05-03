@@ -7,7 +7,7 @@ import app.models  # noqa: F401
 from app.db import Base, get_db
 from app.main import app as fastapi_app
 
-TEST_DATABASE_URL = "postgresql://sport_user:sport_password@db:5432/sport_tracker_test"
+TEST_DATABASE_URL = "postgresql://finance_user:finance_password@db:5432/finance_tracker_test"
 
 engine = create_engine(TEST_DATABASE_URL, future=True)
 TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)

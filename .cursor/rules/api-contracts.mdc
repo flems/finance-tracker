@@ -156,7 +156,7 @@ color: str | null   — hex-цвет (#rrggbb), например #ef4444
 | `POST` | `/savings/goals/{id}/entries` | добавить запись пополнения, `201` |
 | `DELETE` | `/savings/entries/{id}` | удалить запись пополнения, `204` |
 
-> ⚠️ **Ошибки `/savings`** возвращают FastAPI-формат `{"detail": "..."}`, а не стандартный `AppError`. Фронт обрабатывает их gracefully (fallback на `HTTP_4xx`), но `e.code` будет `HTTP_404`, а не `NOT_FOUND`. При добавлении эндпоинтов в savings.py использовать `AppError` из `app/errors.py`, как в budget.py.
+Все ошибки `/savings` используют `AppError` — тот же формат что и `/budget`.
 
 **SavingGoal (ответ)**
 ```

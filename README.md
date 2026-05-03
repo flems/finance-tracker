@@ -1,32 +1,60 @@
-## FatSecret сервис (питание)
+# Finance Tracker
 
-- **Как поднять бэкенд (API + БД)**
-  - Из корня проекта:
+Fullstack-приложение для учёта бюджета и накоплений.
 
-```bash
-docker-compose up --build
-```
+## Стек
 
-- **Где лежат креды FatSecret**
-  - В `docker-compose.yml` в сервисе `backend` в блоке `environment`:
-    - `OAUTH_CONSUMER_KEY`
-    - `OAUTH_CONSUMER_SECRET`
-    - `ACCESS_TOKEN`
-    - `ACCESS_TOKEN_SECRET`
+- **Backend:** FastAPI, SQLAlchemy 2, PostgreSQL, pytest
+- **Frontend:** Vue 3, TypeScript, Vite, Tailwind CSS, FSD-архитектура
 
-- **Как запустить разово**
-  - Из корня проекта (за сегодня по UTC):
+## Запуск
 
 ```bash
-docker-compose run --rm backend python -m app.services.fatsecret.sync_food
+docker compose up --build
 ```
 
-- **Как запустить за конкретную дату**
+- API: http://localhost:8000
+- Frontend: http://localhost:5173 (dev: `cd frontend && npm run dev`)
+- Документация API: http://localhost:8000/docs
+
+## Тесты
 
 ```bash
-docker-compose run --rm backend python -m app.services.fatsecret.sync_food YYYY-MM-DD
+docker compose exec backend python -m pytest tests/ -v
 ```
 
-Дата передаётся последним аргументом в формате `2026-03-12`. Если дату не указывать, берётся текущий день (UTC). 
+Тестовая БД `finance_tracker_test` создаётся автоматически через init-скрипт `docker/postgres/init/`.
 
+## Линтинг
 
+**Frontend:**
+```bash
+cd frontend && npm run lint       # проверка
+cd frontend && npm run lint:fix   # автоисправление
+cd frontend && npm run format     # prettier
+```
+
+**Backend:**
+```bash
+cd backend && ruff check .        # проверка
+cd backend && ruff check . --fix  # автоисправление
+cd backend && ruff format .       # форматирование
+```
+
+## Структура проекта
+
+```
+backend/
+  app/
+    api/        ← роутеры FastAPI
+    models.py   ← SQLAlchemy модели
+    schemas.py  ← Pydantic схемы
+    db.py       ← подключение к БД
+    main.py     ← точка входа
+
+frontend/src/   ← FSD-архитектура
+  shared/       ← переиспользуемая инфраструктура
+  entities/     ← бизнес-сущности
+  widgets/      ← виджеты страниц
+  pages/        ← компоновка страниц
+```

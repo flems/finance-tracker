@@ -1,16 +1,14 @@
-# Sport Tracker
+# Finance Tracker — Frontend
 
-Веб-приложение для отслеживания тренировочной нагрузки.
+Фронтенд на Vue 3 + TypeScript с FSD-архитектурой.
 
 ## Технологии
 
 - Vue 3 + TypeScript
 - Vite
-- Pinia
 - Vue Router
-- Chart.js
 - Tailwind CSS
-- Feature-Sliced Design (FSD) архитектура
+- Feature-Sliced Design (FSD)
 
 ## Установка
 
@@ -24,7 +22,7 @@ npm install
 npm run dev
 ```
 
-Приложение будет доступно по адресу http://localhost:5173
+Приложение доступно по адресу http://localhost:5173
 
 ## Сборка
 
@@ -32,17 +30,25 @@ npm run dev
 npm run build
 ```
 
-## Структура данных
+## Линтинг
 
-Приложение использует три CSV файла из папки `public/data/`:
+```bash
+npm run lint        # ESLint проверка
+npm run lint:fix    # ESLint автоисправление
+npm run format      # Prettier форматирование
+npm run format:check
+```
 
-- `daily_steps.csv` - данные о количестве шагов за день
-- `all_workouts.csv` - данные о беговых тренировках и ходьбе
-- `workout_data.csv` - данные о силовых тренировках
+## Структура `src/`
 
-## Функциональность
+```
+shared/     ← HTTP-клиент, UI-примитивы (без бизнес-логики)
+entities/   ← бизнес-сущности: api + ui (только props/slots) + lib
+widgets/    ← виджеты страниц: fetch, состояние, компоновка
+pages/      ← только компоновка виджетов, без логики
+router/
+App.vue
+main.ts
+```
 
-1. **Общая сводка** - таблица со всеми данными по дням
-2. **Шаги** - график шагов по дням
-3. **Бег и ходьба** - список тренировок с графиками пульса
-4. **Силовые тренировки** - детальная информация о силовых тренировках
+Каждый слой может импортировать только из слоёв **ниже** себя.

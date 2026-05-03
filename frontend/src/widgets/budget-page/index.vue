@@ -248,7 +248,7 @@ async function confirmDeleteIncome(): Promise<void> {
   try {
     await deleteBudgetIncome(deleteModal.income.id)
     deleteModal.open = false
-    toast.success('Доход удалена')
+    toast.success('Доход удалён')
     removeIncomeByIdFromTree(distribution.value, deleteModal.income.id)
   } catch (e) {
     toast.error(e instanceof HttpError ? e.message : 'Не удалось удалить')
